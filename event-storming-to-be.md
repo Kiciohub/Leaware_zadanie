@@ -1,3 +1,10 @@
+# Event Storming: Proces reklamacji TO-BE
+
+**Legenda:**
+- 🟠 Zdarzenie domenowe
+- 🟡 Aktor
+- 🤖 System / automatyzacja
+
 ```mermaid
 flowchart TD
     A1["🟡 Klient"]
