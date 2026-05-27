@@ -116,4 +116,17 @@ Metalpol Sp. z o.o. — producent komponentów metalowych dla branży automotive
 
 ## 10. Pytania otwarte / ryzyka
 
-<!-- Co wymaga decyzji biznesowej lub dalszego discovery -->
+### 10.1 Niespójność danych w opisie procesu
+
+Dane wolumenowe i wydajnościowe w briefie nie są w pełni spójne:
+
+- 600 reklamacji/miesiąc ÷ 20 dni roboczych = 30 reklamacji/dzień → jeden specjalista jest na granicy wydajności przy normalnym wolumenie.
+- W szczycie: 2000/miesiąc ÷ 20 dni = 100/dzień. Brief podaje, że jeden specjalista obsługuje w szczycie do 80/dzień — co oznacza, że backlog (2–3 dni) pojawia się realnie, ale tylko sezonowo, nie przez cały rok.
+- Brief nie precyzuje ile osób liczy zespół serwisu.
+
+**Założenie przyjęte na potrzeby analizy:** opisane problemy (backlog, niespójna kategoryzacja) są prawdziwe i wymagają rozwiązania. Dane traktuję jako orientacyjne.
+
+**Pytanie do klienta (przed projektem):** Ile osób obsługuje reklamacje? Od odpowiedzi zależy podejście do standaryzacji kategoryzacji przez LLM:
+- Jeśli jedna osoba → problem z kategoryzacją leży w niespójności w czasie (zmęczenie, kontekst) — LLM standaryzuje względem jednego wzorca.
+- Jeśli kilka osób → każda może mieć inny punkt widzenia — LLM musi rozstrzygnąć sprzeczne wzorce, co wymaga wcześniejszej decyzji biznesowej: czyja kategoryzacja jest "złota".
+
