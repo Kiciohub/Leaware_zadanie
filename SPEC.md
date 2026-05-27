@@ -130,3 +130,39 @@ Dane wolumenowe i wydajnościowe w briefie nie są w pełni spójne:
 - Jeśli jedna osoba → problem z kategoryzacją leży w niespójności w czasie (zmęczenie, kontekst) — LLM standaryzuje względem jednego wzorca.
 - Jeśli kilka osób → każda może mieć inny punkt widzenia — LLM musi rozstrzygnąć sprzeczne wzorce, co wymaga wcześniejszej decyzji biznesowej: czyja kategoryzacja jest "złota".
 
+### 10.2 Brak zdefiniowanych celów i KPI
+
+Brief opisuje problemy, ale nie definiuje co oznacza sukces projektu.
+
+**Pytania do klienta:**
+- Jakie KPI ma optymalizować system? Czas odpowiedzi do klienta? Dokładność kategoryzacji? Redukcja backlogu?
+- Kto będzie tworzył i monitorował metryki po wdrożeniu?
+
+Odpowiedzi wpłyną na priorytety architektoniczne — inaczej projektuje się system pod "szybkość odpowiedzi", inaczej pod "jakość kategoryzacji".
+
+### 10.3 Akceptowalny poziom błędu LLM
+
+Brief nie określa wymaganej dokładności kategoryzacji ani konsekwencji błędu.
+
+**Pytania do klienta:**
+- Jaka dokładność kategoryzacji jest wystarczająca — 80%? 95%?
+- Czy błędna kategoryzacja ma konsekwencje finansowe lub jakościowe (np. błędny ticket Correction w JIRA)?
+
+Odpowiedź decyduje o tym czy LLM kategoryzuje autonomicznie, czy tylko sugeruje kategorię do zatwierdzenia przez człowieka.
+
+### 10.4 SLA automatyzacji
+
+Brief nie definiuje oczekiwanego czasu przetwarzania przez system.
+
+**Pytanie do klienta:** Czy wystarczy "szybciej niż obecne 2 dni", czy klient oczekuje konkretnego SLA (np. odpowiedź w ciągu godziny)?
+
+Odpowiedź wpływa na architekturę: synchroniczny flow (prosto, taniej) vs kolejkowanie z priorytetami (bardziej złożone, potrzebne przy twardym SLA).
+
+### 10.5 Liczba i definicja kategorii wad
+
+Obecny proces używa 4 kategorii: wizualna / wymiary / materiał / logistyka. Brief nie wyjaśnia czy kategoria wpływa na routing reklamacji ani na priorytety obsługi — jedynie na metryki.
+
+**Obserwacja:** Granica między "wizualna" a "materiałowa" jest rozmyta — zdjęcie wady często nie pozwala rozstrzygnąć czy problem dotyczy powierzchni czy składu materiału. Wymiary i logistyka są obiektywnie rozróżnialne.
+
+**Pytanie do klienta:** Czy można połączyć kategorie "wizualna" i "materiałowa" w jedną? Zmniejszy to koszt i złożoność szkolenia LLM oraz ryzyko niespójnej klasyfikacji na granicy między tymi kategoriami.
+
