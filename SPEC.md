@@ -103,15 +103,26 @@ Przypadki wymagające oceny ludzkiej trafiają do specjalisty jako ticket w JIRA
 ---
 
 ## 5. Architektura i integracje
-
-### 5.1 Diagram komponentów
-<!-- Odniesienie do diagramu Event Storming TO-BE -->
-
-### 5.2 Komponenty systemu
-
+ 
+### 5.1 Komponenty systemu
+ 
+**Istniejące systemy:**
+ 
 | Komponent | Rola | Technologia/API |
 |---|---|---|
-| | | |
+| Microsoft 365 / Exchange | Odbiór maili z reklamacjami | Microsoft Graph API, OAuth2, webhook |
+| PostgreSQL (baza klientów) | Walidacja nadawcy | REST, read-only, ~15k rekordów |
+| SAP ERP (PP/QM) | Walidacja zamówienia, dane o batchu i parametrach produkcji | REST API: GET /api/v1/orders/{id}, GET /api/v1/batches/{id} |
+| JIRA Cloud | Tworzenie ticketów Complaint i Correction | REST API, issue types: Complaint, Correction |
+| Azure Blob Storage | Archiwizacja zdjęć z maili | SAS tokens |
+ 
+**Nowe komponenty:**
+ 
+| Komponent | Rola | Technologia/API |
+|---|---|---|
+| Serwis integracyjny | Orkiestracja całego flow — odbiera webhook, wywołuje kolejne systemy, podejmuje decyzje routingu | Do ustalenia (np. Azure Functions, Python) |
+| LLM | Kategoryzacja wady na podstawie tekstu i zdjęć | Do ustalenia (np. GPT-4o, Claude) |
+
 
 ### 5.3 Gdzie jest LLM i do czego służy
 <!-- Co robi model AI, na jakich danych, z jakim promptem — ogólnie -->
