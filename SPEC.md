@@ -124,11 +124,28 @@ Przypadki wymagające oceny ludzkiej trafiają do specjalisty jako ticket w JIRA
 | LLM | Kategoryzacja wady na podstawie tekstu i zdjęć | Do ustalenia (np. GPT-4o, Claude) |
 
 
-### 5.3 Gdzie jest LLM i do czego służy
-<!-- Co robi model AI, na jakich danych, z jakim promptem — ogólnie -->
-
-### 5.4 Gdzie jest logika reguł (bez LLM)
-<!-- Co NIE powinno iść przez LLM i dlaczego -->
+### 5.2 Zastosowanie LLM
+ 
+**Dane wejściowe:**
+- Treść maila (tekst, PL lub EN)
+- Zdjęcia wad (1–3 obrazy, typowo 2–5 MB każdy)
+  
+**Oczekiwany output:**
+- Kategoria wady: wizualna / wymiary / materiał / logistyka
+- Rekomendacja ścieżki: automatyczna (dane z SAP wystarczają) lub manualna (wymaga oceny specjalisty)
+- Poziom pewności kategoryzacji (do wykorzystania przy routingu)
+  
+**Wymagania wobec modelu:**
+- Obsługa multimodalna (tekst + obraz)
+- Wsparcie dla języka polskiego i angielskiego
+- Dostępność przez API
+  
+### 5.3 Logika deterministyczna
+ 
+- **Walidacja nadawcy** — sprawdzenie w PostgreSQL czy adres email nadawcy istnieje w bazie klientów. Binarna decyzja, nie wymaga interpretacji.
+- **Walidacja zamówienia** — sprawdzenie w SAP czy numer zamówienia z maila istnieje i jest aktywny. Binarna decyzja.
+- **Tworzenie ticketów w JIRA** — operacja na API, bez elementu oceny.
+- **Wysyłka potwierdzenia i odpowiedzi** — szablonowe wiadomości, bez generowania treści przez LLM.
 
 ---
 
