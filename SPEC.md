@@ -134,6 +134,7 @@ Przypadki wymagające oceny ludzkiej trafiają do specjalisty jako ticket w JIRA
 - Kategoria wady: wizualna / wymiary / materiał / logistyka
 - Rekomendacja ścieżki: automatyczna (dane z SAP wystarczają) lub manualna (wymaga oceny specjalisty)
 - Poziom pewności kategoryzacji (do wykorzystania przy routingu)
+- Wykryty język maila (PL lub EN) — do wykorzystania przy wysyłce odpowiedzi do klienta
   
 **Wymagania wobec modelu:**
 - Obsługa multimodalna (tekst + obraz)
@@ -150,12 +151,30 @@ Przypadki wymagające oceny ludzkiej trafiają do specjalisty jako ticket w JIRA
 ---
 
 ## 6. Kluczowe decyzje projektowe
+ 
+### Decyzja 1: Twarde reguły przed LLM
+Walidacja nadawcy (PostgreSQL) i zamówienia (SAP) realizowana przez reguły deterministyczne, nie przez LLM. Binarne sprawdzenia nie wymagają interpretacji — reguły są tańsze, szybsze i przewidywalne.
+ 
+### Decyzja 2: LLM tylko do kategoryzacji i oceny ścieżki
+LLM nie generuje odpowiedzi do klienta ani nie tworzy ticketów. Ograniczenie zakresu LLM do jednego kroku zmniejsza ryzyko błędu i koszt, a zakres można rozszerzać iteracyjnie.
+ 
+### Decyzja 3: Autonomiczna odpowiedź tylko na ścieżce ~85%
+System wysyła odpowiedź do klienta autonomicznie tylko gdy dane z SAP wystarczają do rozstrzygnięcia. Pozostałe przypadki obsługuje specjalista. Pozwala to zweryfikować dokładność systemu w produkcji przed rozszerzeniem autonomii.
+ 
+### Decyzja 4: Jeden ticket Complaint na reklamację
+Ticket Complaint tworzony jest zawsze — przy automatycznej ścieżce zostaje zamknięty przez orkiestrator po utworzeniu Correction, przy manualnej jest początkiem pracy specjalisty. Correction linkowany do Complaint zachowuje pełną historię reklamacji w JIRA.
 
-<!-- Format: Decyzja → Uzasadnienie → Alternatywa którą odrzuciłam i dlaczego -->
-
-### Decyzja 1: 
-### Decyzja 2: 
-### Decyzja 3: 
+### Decyzja 5: Ticket tylko dla zwalidowanych maili
+Tickety tworzone są wyłącznie dla maili które przeszły walidację nadawcy i zamówienia. Maile odrzucone na etapie walidacji nie generują wpisów w JIRA.
+ 
+### Decyzja 6: Single-pass architecture
+Każdy system jest odpytywany raz, w kolejności wynikającej z dostępności danych wejściowych. Eliminuje to wielokrotne wywołania tych samych systemów i upraszcza logikę orkiestratora.
+ 
+### Decyzja 7: Synchroniczny flow
+Flow realizowany synchronicznie — bez kolejkowania i priorytetyzacji. Wystarczające przy braku twardego SLA; upraszcza architekturę i obniża koszt wdrożenia.
+ 
+### Decyzja 8: Język odpowiedzi wykrywany przez LLM
+LLM wykrywa język maila i odpowiedź wysyłana jest w tym samym języku. Przy mailach mieszanych (PL/EN) LLM wybiera język dominujący.
 
 ---
 
