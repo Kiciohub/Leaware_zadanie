@@ -217,9 +217,19 @@ LLM wykrywa język dominujący i wysyła odpowiedź w tym języku.
  
 ---
 
-## 9. Co zostało poza zakresem (i dlaczego)
-
-<!-- Czego świadomie nie robię w tej wersji -->
+## 9. Poza zakresem projektu
+ 
+**Warstwa raportowa**
+Nowy proces generuje ustrukturyzowane dane w JIRA stanowiące podstawę do raportowania. Budowa dashboardu analitycznego pozostaje decyzją po stronie klienta i jest traktowana jako odrębny projekt.
+ 
+**Aktualizacja modelu LLM**
+Projekt nie obejmuje budowy mechanizmu feedback loop. Ewentualna aktualizacja modelu realizowana jest na zlecenie klienta.
+ 
+**Zarządzanie bazą klientów**
+System zakłada aktualność istniejącej bazy klientów (PostgreSQL, read-only). Proces jej utrzymania i aktualizacji pozostaje poza zakresem.
+ 
+**Interfejs użytkownika dla specjalisty**
+Specjalista obsługuje reklamacje przez JIRA. Budowa dedykowanego panelu nie jest częścią tego projektu.
 
 ---
 
