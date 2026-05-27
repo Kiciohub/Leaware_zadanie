@@ -8,7 +8,7 @@
 
 ## 1. Cel dokumentu
 
-<!-- Co opisuje ten dokument i jaki problem rozwiązuje -->
+Dokument opisuje proponowane rozwiązanie automatyzacji procesu obsługi reklamacji dla Metalpol Sp. z o.o. Zawiera analizę obecnego procesu, zakres i architekturę automatyzacji, kluczowe decyzje projektowe oraz pytania otwarte wymagające uzgodnienia z klientem przed wdrożeniem.
 
 ---
 
