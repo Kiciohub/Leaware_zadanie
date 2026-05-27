@@ -168,7 +168,7 @@ Ticket Complaint tworzony jest zawsze — przy automatycznej ścieżce zostaje z
 Tickety tworzone są wyłącznie dla maili które przeszły walidację nadawcy i zamówienia. Maile odrzucone na etapie walidacji nie generują wpisów w JIRA.
  
 ### Decyzja 6: Single-pass architecture
-Każdy system jest odpytywany raz, w kolejności wynikającej z dostępności danych wejściowych. Eliminuje to wielokrotne wywołania tych samych systemów i upraszcza logikę orkiestratora.
+Każdy system jest odpytywany raz, w kolejności wynikającej z dostępności danych wejściowych. Eliminuje to wielokrotne wywołania tych samych systemów, upraszcza logikę orkiestratora i ułatwia wykrywanie błędów.
  
 ### Decyzja 7: Synchroniczny flow
 Flow realizowany synchronicznie — bez kolejkowania i priorytetyzacji. Wystarczające przy braku twardego SLA; upraszcza architekturę i obniża koszt wdrożenia.
@@ -176,12 +176,33 @@ Flow realizowany synchronicznie — bez kolejkowania i priorytetyzacji. Wystarcz
 ### Decyzja 8: Język odpowiedzi wykrywany przez LLM
 LLM wykrywa język maila i odpowiedź wysyłana jest w tym samym języku. Przy mailach mieszanych (PL/EN) LLM wybiera język dominujący.
 
+### Decyzja 9: Brak automatycznego feedback loop
+Model jest trenowany na historycznych danych przed wdrożeniem. Po uruchomieniu systemu korekty specjalistów nie wracają automatycznie do modelu. Przy wolumenie ~600 reklamacji miesięcznie koszt budowy i utrzymania feedback loop przewyższa korzyści — ewentualna aktualizacja modelu może zostać przeprowadzona na życzenie klienta.
+ 
 ---
-
+ 
 ## 7. Edge case'y i obsługa wyjątków
-
-<!-- Co się dzieje gdy: mail jest niekompletny / SAP nie odpowiada / LLM zwraca niską pewność kategoryzacji / itd. -->
-
+ 
+W przypadkach gdy automatyczne przetwarzanie nie jest możliwe, tworzony jest ticket Complaint i przekazywany do specjalisty. Zapewnia to ciągłość obsługi niezależnie od rodzaju wyjątku.
+ 
+**Timeout SAP lub bazy klientów**
+Jeśli system nie otrzyma odpowiedzi w określonym czasie, ticket zakładany i kierowany do specjalisty z informacją o niedostępności systemu. Próg timeout do ustalenia przed wdrożeniem.
+ 
+**Walidacja nie przeszła (nieznany nadawca lub nieistniejące zamówienie)**
+Brak ticketu, brak odpowiedzi do nadawcy. Wyjątek — jeśli nadawca jest w bazie klientów ale numer zamówienia nie przeszedł walidacji, wysyłana jest zwrotka z prośbą o weryfikację numeru. Decyzja o szczegółach obsługi tego przypadku do uzgodnienia z klientem (patrz sekcja 10).
+ 
+**Mail bez zdjęcia lub załącznik w nieobsługiwanym formacie**
+Ticket zakładany i kierowany do specjalisty. Potwierdzenie odbioru wysyłane do klienta.
+ 
+**LLM zwraca niską pewność kategoryzacji**
+Ticket zakładany z flagą niskiej pewności i kierowany do specjalisty. Próg pewności poniżej którego następuje eskalacja do ustalenia przed wdrożeniem.
+ 
+**Mail jest odpowiedzią na istniejący wątek**
+System sprawdza czy temat maila zawiera numer ticketu JIRA (np. RE: [REK-123]). Jeśli tak — mail dołączany do istniejącego ticketu, nowy ticket nie jest tworzony.
+ 
+**Język mieszany PL/EN**
+LLM wykrywa język dominujący i wysyła odpowiedź w tym języku.
+ 
 ---
 
 ## 8. Trade-offy
