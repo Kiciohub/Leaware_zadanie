@@ -285,3 +285,16 @@ Obecny proces używa 4 kategorii: wizualna / wymiary / materiał / logistyka. Br
 
 **Pytanie do klienta:** Czy można połączyć kategorie "wizualna" i "materiałowa" w jedną? Zmniejszy to koszt i złożoność szkolenia LLM oraz ryzyko niespójnej klasyfikacji na granicy między tymi kategoriami.
 
+### 10.6 Wybór modelu LLM
+ 
+Projekt zakłada użycie zewnętrznego modelu multimodalnego dostępnego przez API. Wybór konkretnego modelu pozostaje do ustalenia przed wdrożeniem.
+ 
+**Pytania do klienta:**
+- Jakie są wymagania dotyczące bezpieczeństwa danych — czy dane reklamacyjne mogą być przesyłane do zewnętrznego API?
+- Jaki jest dostępny budżet na wywołania API?
+  
+### 10.7 Obsługa zwrotki przy odrzuceniu maila
+ 
+System nie wysyła odpowiedzi do nieznanych nadawców. Nierozstrzygnięte pozostaje zachowanie systemu gdy nadawca jest w bazie klientów, ale numer zamówienia nie przeszedł walidacji.
+ 
+**Pytanie do klienta:** Czy w takim przypadku system ma wysłać zwrotkę z prośbą o weryfikację numeru zamówienia, czy mail jest odrzucany bez odpowiedzi?
