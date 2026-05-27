@@ -46,10 +46,22 @@ Metalpol Sp. z o.o. — producent komponentów metalowych dla branży automotive
 - Kategoryzacja niespójna między specjalistami — ten sam typ wady raz "wizualna", raz "materiał".
 - Brak metryk: ile reklamacji, jakie typy, które linie produkcyjne generują najwięcej problemów.
 - SAP i JIRA nie komunikują się ze sobą — wszystko przechodzi ręcznie przez Excela.
-
+  
 ### 2.3 Zakres automatyzacji
-
-<!-- Co automatyzujemy, czego NIE automatyzujemy i dlaczego -->
+ 
+**Zakres automatyzacji:**
+- Odbiór maili z reklamacjami (webhook, filtrowanie spamu)
+- Walidacja nadawcy (baza klientów) i zamówienia (SAP)
+- Wysyłka potwierdzenia odbioru do klienta
+- Kategoryzacja wady przez LLM (tekst + zdjęcia)
+- Tworzenie ticketu Complaint w JIRA z danymi z SAP
+- Ocena czy sprawa może zostać rozstrzygnięta automatycznie
+- Tworzenie ticketu Correction w JIRA i wysyłka odpowiedzi do klienta — na ścieżce gdzie SAP dostarcza wystarczające dane
+  
+**Obsługa manualna (human-in-the-loop):**
+- Przypadki z niekompletnymi danymi: nieznany nadawca, brak zamówienia w SAP
+- Przypadki gdzie dane z SAP lub wynik kategoryzacji LLM nie są wystarczające do podjęcia decyzji
+- Odpowiedź do klienta na ścieżkach wymagających oceny specjalisty
 
 ---
 
