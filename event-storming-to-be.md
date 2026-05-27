@@ -1,3 +1,4 @@
+```mermaid
 flowchart TD
     A1["🟡 Klient"]
     A2["🟡 Specjalista serwisu"]
@@ -32,3 +33,4 @@ flowchart TD
     E12 --> A2
     A2 --> E13
     E13 --> A1
+```
