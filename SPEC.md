@@ -75,7 +75,30 @@ LLM został zastosowany w jednym, konkretnym miejscu: kategoryzacji wady na pods
 
 ## 4. Flow automatyzacji (TO-BE)
 
-<!-- Opis krok po kroku jak działa nowy proces — od maila do zamknięcia ticketu -->
+Pełny diagram procesu: [event-storming-to-be.md](event-storming-to-be.md)
+ 
+Poniżej opisane są elementy dodane względem procesu AS-IS:
+ 
+**Webhook i filtrowanie spamu**
+Mail na reklamacje@metalpol.pl wyzwala webhook Microsoft Graph API. Reklamacja jest odbierana natychmiast, bez udziału specjalisty.
+ 
+**Walidacja twarda**
+System sprawdza czy nadawca jest w bazie klientów (PostgreSQL) i czy numer zamówienia istnieje w SAP. Maile które nie przechodzą walidacji są odrzucane bez tworzenia ticketu.
+ 
+**Potwierdzenie odbioru**
+Po pozytywnej walidacji system wysyła klientowi automatyczne potwierdzenie odbioru.
+ 
+**Kategoryzacja przez LLM**
+LLM analizuje treść maila i zdjęcia i przypisuje kategorię wady. Zastępuje subiektywną ocenę specjalisty ujednoliconą klasyfikacją.
+ 
+**Tworzenie ticketu Complaint w JIRA**
+Ticket tworzony automatycznie z kategorią wady i danymi z SAP (zamówienie, batch, parametry produkcji). Specjalista przejmujący sprawę ma wszystkie dane w jednym miejscu.
+ 
+**Automatyczne zamknięcie — ~85% przypadków**
+Jeśli dane z SAP wystarczają do rozstrzygnięcia reklamacji, system tworzy ticket Correction w JIRA i wysyła odpowiedź do klienta bez angażowania specjalisty.
+ 
+**Przekazanie do specjalisty**
+Przypadki wymagające oceny ludzkiej trafiają do specjalisty jako ticket w JIRA — z kategorią, danymi z SAP i historią maila.
 
 ---
 
