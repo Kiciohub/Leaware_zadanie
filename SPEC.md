@@ -67,7 +67,9 @@ Metalpol Sp. z o.o. — producent komponentów metalowych dla branży automotive
 
 ## 3. Proponowane rozwiązanie — overview
 
-<!-- 2-3 zdania: co proponujesz i jaka jest główna idea -->
+Proponowane rozwiązanie eliminuje manualną obsługę przepływu danych między systemami — od odebrania maila, przez weryfikację w bazie klientów i SAP, po utworzenie ticketu w JIRA. Głównym celem jest usunięcie Excela jako pośrednika między systemami i skrócenie czasu obsługi reklamacji.
+ 
+LLM został zastosowany w jednym, konkretnym miejscu: kategoryzacji wady na podstawie treści maila i zdjęć. Rozwiązuje to problem niespójnej klasyfikacji między specjalistami i pozwala systemowi automatycznie zamknąć ~85% przypadków, które można rozstrzygnąć na podstawie danych z SAP. Pozostałe przypadki trafiają do specjalisty z kompletem danych już zebranych przez automat.
 
 ---
 
