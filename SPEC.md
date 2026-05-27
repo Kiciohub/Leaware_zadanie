@@ -206,11 +206,15 @@ LLM wykrywa język dominujący i wysyła odpowiedź w tym języku.
 ---
 
 ## 8. Trade-offy
-
+ 
 | Wybór | Zysk | Koszt |
 |---|---|---|
-| | | |
-
+| Synchroniczny flow | Prosta architektura, niższy koszt wdrożenia | Brak priorytetyzacji — przy twardym SLA może być niewystarczające |
+| Brak feedback loop | Niższy koszt utrzymania, brak złożonej infrastruktury | Model nie poprawia się automatycznie — aktualizacja wymaga ręcznej interwencji |
+| Twarde reguły do walidacji nadawcy i zamówienia | Przewidywalne, szybkie, tanie | Brak tolerancji na błędy — literówka w adresie lub numerze zamówienia skutkuje odrzuceniem |
+| Edge case'y zawsze kierowane do specjalisty | Bezpieczeństwo — żadna reklamacja nie jest błędnie obsłużona automatycznie | Mniejsza automatyzacja — specjalista nadal obsługuje wyjątki |
+| Walidacja nadawcy jako filtr | Eliminacja spamu i nieuprawnionych zgłoszeń | Wymaga od klientów wysyłania reklamacji z zarejestrowanego adresu email — konieczne poinformowanie klientów |
+ 
 ---
 
 ## 9. Co zostało poza zakresem (i dlaczego)
