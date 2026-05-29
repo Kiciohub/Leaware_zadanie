@@ -5,6 +5,8 @@
 - 🟡 Aktor
 - 🤖 System / automatyzacja
 
+---
+
 ```mermaid
 flowchart TD
     A1["🟡 Klient"]
@@ -12,32 +14,39 @@ flowchart TD
     A3["🟡 Dział jakości"]
 
     E1["🟠 Mail odebrany\n(webhook, sprawdzenie spam)"]
-    E1B["🤖 Walidacja nadawcy i zamówienia\n(baza klientów + SAP)"]
-    E2{"Nadawca w bazie klientów\n+ zamówienie w SAP?"}
-    E3["🤖 Potwierdzenie odbioru\nwysłane do klienta"]
-    E6["🤖 LLM kategoryzuje wadę\n(tekst + zdjęcia)"]
-    E8["🟠 Ticket Complaint utworzony w JIRA\n(kategoria + dane z SAP)"]
-    E9{"Dane kompletne\ni SAP wystarcza\ndo rozstrzygnięcia?"}
-    E10["🟠 Ticket Correction utworzony w JIRA\n(dla działu jakości)"]
+    E2["🤖 Sprawdzenie domeny nadawcy\n(baza klientów)"]
+    E3{"Domena w bazie\nklientów?"}
+    E4["🟠 Mail odrzucony\n(brak odpowiedzi)"]
+    E5["🤖 Potwierdzenie odbioru\nwysłane do klienta"]
+    E6["🤖 Dane pobrane z SAP\n(zamówienie + batch)"]
+    E7["🤖 LLM analizuje mail\n(tekst + zdjęcia + dane z SAP)\nkategoria + decyzja o ścieżce"]
+    E8["🤖 Ticket Complaint utworzony w JIRA\n(kategoria + dane z SAP)"]
+    E9{"Ścieżka?"}
+    E10["🤖 Ticket Correction utworzony w JIRA\n(dla działu jakości)"]
     E11["🤖 Odpowiedź wysłana do klienta\nautomatycznie"]
     E12["🟠 Ticket przekazany do specjalisty"]
-    E13["🟠 Odpowiedź wysłana do klienta\nprzez specjalistę"]
-    E14["🟠 Mail odrzucony\n(brak odpowiedzi)"]
+    E13{"Wada potwierdzona\nprzez specjalistę?"}
+    E14["🟠 Ticket Correction utworzony w JIRA\n(dla działu jakości)"]
+    E15["🟠 Odpowiedź wysłana do klienta\nprzez specjalistę"]
 
     A1 --> E1
-    E1 --> E1B
-    E1B --> E2
-    E2 -->|Nie| E14
-    E2 -->|Tak| E3
-    E3 --> E6
-    E6 --> E8
+    E1 --> E2
+    E2 --> E3
+    E3 -->|Nie| E4
+    E3 -->|Tak| E5
+    E5 --> E6
+    E6 --> E7
+    E7 --> E8
     E8 --> E9
-    E9 -->|Tak| E10
-    E10 --> A3
+    E9 -->|Automatyczna| E10
     E10 --> E11
-    E11 --> A1
-    E9 -->|Nie| E12
+    E10 --> A3
+
+    E9 -->|Specjalista| E12
     E12 --> A2
     A2 --> E13
-    E13 --> A1
+    E13 -->|Tak| E14
+    E14 --> A3
+    E14 --> E15
+    E13 -->|Nie| E15
 ```
