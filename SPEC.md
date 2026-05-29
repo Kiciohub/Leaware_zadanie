@@ -96,7 +96,10 @@ System odpytuje SAP raz — pobiera dane o zamówieniu i batchu. Dane przekazywa
 LLM analizuje treść maila i zdjęcia i przypisuje kategorię wady. Zastępuje subiektywną ocenę specjalisty ujednoliconą klasyfikacją.
  
 **Tworzenie ticketu Complaint w JIRA**
-Ticket tworzony automatycznie z kategorią wady i danymi z SAP (zamówienie, batch, parametry produkcji). Specjalista przejmujący sprawę ma wszystkie dane w jednym miejscu.
+Ticket tworzony automatycznie z kategorią wady, danymi z SAP (zamówienie, batch, parametry produkcji) i polem Resolution (automatic / manual) wypełnianym przez orkiestrator. Specjalista przejmujący sprawę ma wszystkie dane w jednym miejscu.
+ 
+**Archiwizacja zdjęć**
+Po utworzeniu ticketu Complaint zdjęcia z maila zapisywane są w Azure Blob Storage. Nazwa pliku zawiera numer ticketu JIRA (np. `REK-123_zdjecie1.jpg`) — zapewnia to unikalność nazw i powiązanie zdjęć z ticketem bez dodatkowego mapowania. Ticket w JIRA zawiera odnośnik do archiwum.
  
 **Automatyczne zamknięcie — ~85% przypadków**
 Jeśli dane z SAP wystarczają do rozstrzygnięcia reklamacji, system tworzy ticket Correction w JIRA i wysyła odpowiedź do klienta bez angażowania specjalisty.
@@ -140,6 +143,10 @@ Przypadki wymagające oceny ludzkiej trafiają do specjalisty jako ticket w JIRA
 - Rekomendacja ścieżki: automatyczna (dane z SAP wystarczają) lub manualna (wymaga oceny specjalisty)
 - Poziom pewności kategoryzacji (do wykorzystania przy routingu)
 - Wykryty język maila (PL lub EN) — do wykorzystania przy wysyłce odpowiedzi do klienta
+
+**Output orkiestratora (przy tworzeniu ticketu Complaint):**
+- Pole Resolution: `automatic` lub `manual` — wypełniane na podstawie rekomendacji LLM
+- Odnośnik do zdjęć w Azure Blob Storage
   
 **Wymagania wobec modelu:**
 - Obsługa multimodalna (tekst + obraz)
