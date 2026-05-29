@@ -51,7 +51,8 @@ Metalpol Sp. z o.o. — producent komponentów metalowych dla branży automotive
  
 **Zakres automatyzacji:**
 - Odbiór maili z reklamacjami (webhook, filtrowanie spamu)
-- Walidacja nadawcy (baza klientów) i zamówienia (SAP)
+- Walidacja domeny nadawcy (baza klientów)
+- Pobranie danych z SAP (zamówienie + batch)
 - Wysyłka potwierdzenia odbioru do klienta
 - Kategoryzacja wady przez LLM (tekst + zdjęcia)
 - Tworzenie ticketu Complaint w JIRA z danymi z SAP
@@ -59,7 +60,7 @@ Metalpol Sp. z o.o. — producent komponentów metalowych dla branży automotive
 - Tworzenie ticketu Correction w JIRA i wysyłka odpowiedzi do klienta — na ścieżce gdzie SAP dostarcza wystarczające dane
   
 **Obsługa manualna (human-in-the-loop):**
-- Przypadki z niekompletnymi danymi: nieznany nadawca, brak zamówienia w SAP
+- Przypadki z niekompletnymi danymi: brak zamówienia w SAP, niezrozumiała lub niekompletna treść maila (brak zdjęć, opisu lub numeru zamówienia)
 - Przypadki gdzie dane z SAP lub wynik kategoryzacji LLM nie są wystarczające do podjęcia decyzji
 - Odpowiedź do klienta na ścieżkach wymagających oceny specjalisty
 
@@ -82,9 +83,12 @@ Poniżej opisane są elementy dodane względem procesu AS-IS:
 **Webhook i filtrowanie spamu**
 Mail na reklamacje@metalpol.pl wyzwala webhook Microsoft Graph API. Reklamacja jest odbierana natychmiast, bez udziału specjalisty.
  
-**Walidacja twarda**
-System sprawdza czy nadawca jest w bazie klientów (PostgreSQL) i czy numer zamówienia istnieje w SAP. Maile które nie przechodzą walidacji są odrzucane bez tworzenia ticketu.
+**Walidacja domeny nadawcy**
+System sprawdza czy domena nadawcy istnieje w bazie klientów (PostgreSQL). Maile od nieznanych nadawców są odrzucane bez tworzenia ticketu i bez odpowiedzi.
  
+**Pobranie danych z SAP**
+Po potwierdzeniu odbioru system odpytuje SAP raz — pobiera dane o zamówieniu i batchu. Dane przekazywane są do LLM jako kontekst do analizy.
+
 **Potwierdzenie odbioru**
 Po pozytywnej walidacji system wysyła klientowi automatyczne potwierdzenie odbioru.
  
@@ -129,6 +133,7 @@ Przypadki wymagające oceny ludzkiej trafiają do specjalisty jako ticket w JIRA
 **Dane wejściowe:**
 - Treść maila (tekst, PL lub EN)
 - Zdjęcia wad (1–3 obrazy, typowo 2–5 MB każdy)
+- Dane z SAP (zamówienie, batch, parametry produkcji)
   
 **Oczekiwany output:**
 - Kategoria wady: wizualna / wymiary / materiał / logistyka
