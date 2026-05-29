@@ -20,6 +20,8 @@ Metalpol Sp. z o.o. — producent komponentów metalowych dla branży automotive
 
 **Obecny proces reklamacji (AS-IS):**
 
+Pełny diagram procesu: [event-storming-as-is.md](event-storming-as-is.md)
+
 1. Klient wysyła e-mail na `reklamacje@metalpol.pl` — zdjęcie wady, numer zamówienia, opis (PL lub EN).
 2. Specjalista serwisu czyta e-mail, ręcznie przepisuje dane do Excela (Rejestr Reklamacji 2026.xlsx).
 3. Kategoryzuje wadę (wizualna / wymiary / materiał / logistyka) — ocena subiektywna.
@@ -78,7 +80,7 @@ LLM został zastosowany w jednym, konkretnym miejscu: kategoryzacji wady na pods
 
 Pełny diagram procesu: [event-storming-to-be.md](event-storming-to-be.md)
  
-Poniżej opisane są elementy dodane względem procesu AS-IS:
+Poniżej opisane są elementy dodane względem procesu AS-IS: [event-storming-as-is.md](event-storming-as-is.md)
  
 **Webhook i filtrowanie spamu**
 Mail na `reklamacje@metalpol.pl` wyzwala webhook Microsoft Graph API. Reklamacja jest odbierana natychmiast, bez udziału specjalisty.
