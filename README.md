@@ -10,7 +10,7 @@
 |---|---|
 | [event-storming-as-is.md](event-storming-as-is.md) | Diagram Event Storming — obecny proces obsługi reklamacji |
 | [event-storming-to-be.md](event-storming-to-be.md) | Diagram Event Storming — proces po wprowadzeniu automatyzacji |
-| [SPEC.md](SPEC.md) | wysokopoziomowa pecyfikacja rozwiązania — flow, integracje, decyzje projektowe, trade-offy |
+| [SPEC.md](SPEC.md) | Wysokopoziomowa specyfikacja rozwiązania — flow, integracje, decyzje projektowe, trade-offy |
  
 ## Zawartość SPEC.md
  
