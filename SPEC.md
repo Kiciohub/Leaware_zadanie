@@ -20,7 +20,7 @@ Metalpol Sp. z o.o. — producent komponentów metalowych dla branży automotive
 
 **Obecny proces reklamacji (AS-IS):**
 
-1. Klient wysyła e-mail na reklamacje@metalpol.pl — zdjęcie wady, numer zamówienia, opis (PL lub EN).
+1. Klient wysyła e-mail na `reklamacje@metalpol.pl` — zdjęcie wady, numer zamówienia, opis (PL lub EN).
 2. Specjalista serwisu czyta e-mail, ręcznie przepisuje dane do Excela (Rejestr Reklamacji 2026.xlsx).
 3. Kategoryzuje wadę (wizualna / wymiary / materiał / logistyka) — ocena subiektywna.
 4. Tworzy ticket w JIRA (projekt REK, issue type Complaint), sprawdza zamówienie i batch w SAP.
@@ -33,7 +33,7 @@ Metalpol Sp. z o.o. — producent komponentów metalowych dla branży automotive
 - ~85% reklamacji można rozstrzygnąć na podstawie danych w SAP (batch → operator → parametry produkcji).
 
 **Dostępne systemy:**
-- Microsoft 365 / Exchange (reklamacje@metalpol.pl) — Microsoft Graph API, OAuth2, webhook na nowe maile dostępny.
+- Microsoft 365 / Exchange (`reklamacje@metalpol.pl`) — Microsoft Graph API, OAuth2, webhook na nowe maile dostępny.
 - SAP ERP (moduł PP/QM) — REST API: GET /api/v1/orders/{id}, GET /api/v1/batches/{id}, rate limit 100 req/min.
 - JIRA Cloud (projekt REK) — REST API, issue types: Complaint, Correction.
 - Wewnętrzna baza klientów — PostgreSQL (read-only), ~15k rekordów.
@@ -81,19 +81,19 @@ Pełny diagram procesu: [event-storming-to-be.md](event-storming-to-be.md)
 Poniżej opisane są elementy dodane względem procesu AS-IS:
  
 **Webhook i filtrowanie spamu**
-Mail na reklamacje@metalpol.pl wyzwala webhook Microsoft Graph API. Reklamacja jest odbierana natychmiast, bez udziału specjalisty.
+Mail na `reklamacje@metalpol.pl` wyzwala webhook Microsoft Graph API. Reklamacja jest odbierana natychmiast, bez udziału specjalisty.
  
 **Walidacja domeny nadawcy**
 System sprawdza czy domena nadawcy istnieje w bazie klientów (PostgreSQL). Maile od nieznanych nadawców są odrzucane bez tworzenia ticketu i bez odpowiedzi.
 
 **Potwierdzenie odbioru**
-Po pozytywnej walidacji system wysyła klientowi automatyczne potwierdzenie odbioru.
- 
-**Pobranie danych z SAP**
-Po potwierdzeniu odbioru system odpytuje SAP raz — pobiera dane o zamówieniu i batchu. Dane przekazywane są do LLM jako kontekst do analizy.
+Po pozytywnej walidacji domeny system wysyła klientowi automatyczne potwierdzenie odbioru.
 
+**Pobranie danych z SAP**
+System odpytuje SAP raz — pobiera dane o zamówieniu i batchu. Dane przekazywane są do LLM jako kontekst do analizy.
+ 
 **Kategoryzacja przez LLM**
-LLM analizuje treść maila, zdjęcia i przypisuje kategorię wady. Zastępuje subiektywną ocenę specjalisty ujednoliconą klasyfikacją.
+LLM analizuje treść maila i zdjęcia i przypisuje kategorię wady. Zastępuje subiektywną ocenę specjalisty ujednoliconą klasyfikacją.
  
 **Tworzenie ticketu Complaint w JIRA**
 Ticket tworzony automatycznie z kategorią wady i danymi z SAP (zamówienie, batch, parametry produkcji). Specjalista przejmujący sprawę ma wszystkie dane w jednym miejscu.
@@ -193,8 +193,8 @@ W przypadkach gdy automatyczne przetwarzanie nie jest możliwe, tworzony jest ti
 **Timeout SAP lub bazy klientów**
 Jeśli system nie otrzyma odpowiedzi w określonym czasie, ticket zakładany i kierowany do specjalisty z informacją o niedostępności systemu. Próg timeout do ustalenia przed wdrożeniem.
  
-**Walidacja nie przeszła (nieznany nadawca lub nieistniejące zamówienie)**
-Brak ticketu, brak odpowiedzi do nadawcy. Wyjątek — jeśli nadawca jest w bazie klientów ale numer zamówienia nie przeszedł walidacji, wysyłana jest zwrotka z prośbą o weryfikację numeru. Decyzja o szczegółach obsługi tego przypadku do uzgodnienia z klientem (patrz sekcja 10).
+**Nieznana domena nadawcy**
+Mail odrzucany bez tworzenia ticketu i bez odpowiedzi.
  
 **Mail bez zdjęcia lub załącznik w nieobsługiwanym formacie**
 Ticket zakładany i kierowany do specjalisty. Potwierdzenie odbioru wysyłane do klienta.
@@ -216,10 +216,8 @@ LLM wykrywa język dominujący i wysyła odpowiedź w tym języku.
 |---|---|---|
 | Synchroniczny flow | Prosta architektura, niższy koszt wdrożenia | Brak priorytetyzacji — przy twardym SLA może być niewystarczające |
 | Brak feedback loop | Niższy koszt utrzymania, brak złożonej infrastruktury | Model nie poprawia się automatycznie — aktualizacja wymaga ręcznej interwencji |
-| Brak feedback loop | Niższy koszt utrzymania, brak złożonej infrastruktury | Model nie poprawia się automatycznie — aktualizacja wymaga ręcznej interwencji |
-| Twarde reguły do walidacji domeny nadawcy | Przewidywalne, szybkie, tanie | System zależy od aktualności bazy klientów po stronie Metalpol — nieaktualna domena (nowy adres klienta, błąd w bazie) skutkuje cichym odrzuceniem reklamacji |
+| Twarde reguły do walidacji domeny nadawcy | Eliminacja spamu, przewidywalne i tanie | System zależy od aktualności bazy klientów — nieaktualna domena skutkuje cichym odrzuceniem reklamacji; klienci muszą wysyłać maile z zarejestrowanego adresu |
 | Edge case'y zawsze kierowane do specjalisty | Bezpieczeństwo — żadna reklamacja nie jest błędnie obsłużona automatycznie | Mniejsza automatyzacja — specjalista nadal obsługuje wyjątki |
-| Walidacja nadawcy jako filtr | Eliminacja spamu i nieuprawnionych zgłoszeń | Wymaga od klientów wysyłania reklamacji z zarejestrowanego adresu email — konieczne poinformowanie klientów |
  
 ---
 
@@ -231,8 +229,6 @@ Nowy proces generuje ustrukturyzowane dane w JIRA stanowiące podstawę do rapor
 **Aktualizacja modelu LLM**
 Projekt nie obejmuje budowy mechanizmu feedback loop. Ewentualna aktualizacja modelu realizowana jest na zlecenie klienta.
  
-**Zarządzanie bazą klientów**
-System zakłada aktualność istniejącej bazy klientów (PostgreSQL, read-only). Proces jej utrzymania i aktualizacji pozostaje poza zakresem.
  
 **Interfejs użytkownika dla specjalisty**
 Specjalista obsługuje reklamacje przez JIRA. Budowa dedykowanego panelu nie jest częścią tego projektu.
@@ -249,7 +245,7 @@ Dane wolumenowe i wydajnościowe w briefie nie są w pełni spójne:
 - W szczycie: 2000/miesiąc ÷ 20 dni = 100/dzień. Brief podaje, że jeden specjalista obsługuje w szczycie do 80/dzień — co oznacza, że backlog (2–3 dni) pojawia się realnie, ale tylko sezonowo, nie przez cały rok.
 - Brief nie precyzuje ile osób liczy zespół serwisu.
 
-**Założenie przyjęte na potrzeby analizy:** opisane problemy (backlog, niespójna kategoryzacja) są prawdziwe i wymagają rozwiązania. Dane traktuję jako orientacyjne.
+**Założenie przyjęte na potrzeby analizy:** opisane problemy (backlog, niespójna kategoryzacja) są prawdziwe i wymagają rozwiązania. Dane wolumenowe przyjęto jako orientacyjne.
 
 **Pytanie do klienta (przed projektem):** Ile osób obsługuje reklamacje? Od odpowiedzi zależy podejście do standaryzacji kategoryzacji przez LLM:
 - Jeśli jedna osoba → problem z kategoryzacją leży w niespójności w czasie (zmęczenie, kontekst) — LLM standaryzuje względem jednego wzorca.
@@ -263,7 +259,7 @@ Brief opisuje problemy, ale nie definiuje co oznacza sukces projektu.
 - Jakie KPI ma optymalizować system? Czas odpowiedzi do klienta? Dokładność kategoryzacji? Redukcja backlogu?
 - Kto będzie tworzył i monitorował metryki po wdrożeniu?
 
-Odpowiedzi wpłyną na priorytety architektoniczne — inaczej projektuje się system pod "szybkość odpowiedzi", inaczej pod "jakość kategoryzacji".
+Odpowiedzi wpłyną na priorytety architektoniczne.
 
 ### 10.3 Akceptowalny poziom błędu LLM
 
@@ -281,7 +277,7 @@ Brief nie definiuje oczekiwanego czasu przetwarzania przez system.
 
 **Pytanie do klienta:** Czy wystarczy "szybciej niż obecne 2 dni", czy klient oczekuje konkretnego SLA (np. odpowiedź w ciągu godziny)?
 
-Odpowiedź wpływa na architekturę: synchroniczny flow (prosto, taniej) vs kolejkowanie z priorytetami (bardziej złożone, potrzebne przy twardym SLA).
+Odpowiedź wpływa na wybór architektury flow (patrz Decyzja 7).
 
 ### 10.5 Liczba i definicja kategorii wad
 
@@ -300,5 +296,5 @@ Projekt zakłada użycie zewnętrznego modelu multimodalnego dostępnego przez A
 - Jaki jest dostępny budżet na wywołania API?
   
 ### 10.7 Konfiguracja skrzynki i adresów wysyłki
- 
-Przed wdrożeniem wymaga uzgodnienia konfiguracja skrzynki reklamacje@metalpol.pl (obsługa CC, unikanie duplikowania ticketów przy odpowiedziach klientów) oraz adres z którego system wysyła automatyczne potwierdzenia i odpowiedzi.
+
+Przed wdrożeniem wymaga uzgodnienia konfiguracja skrzynki `reklamacje@metalpol.pl` (obsługa CC, unikanie duplikowania ticketów przy odpowiedziach klientów) oraz adres z którego system wysyła automatyczne potwierdzenia i odpowiedzi.
