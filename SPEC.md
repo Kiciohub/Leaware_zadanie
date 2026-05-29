@@ -85,15 +85,15 @@ Mail na reklamacje@metalpol.pl wyzwala webhook Microsoft Graph API. Reklamacja j
  
 **Walidacja domeny nadawcy**
 System sprawdza czy domena nadawcy istnieje w bazie klientów (PostgreSQL). Maile od nieznanych nadawców są odrzucane bez tworzenia ticketu i bez odpowiedzi.
- 
-**Pobranie danych z SAP**
-Po potwierdzeniu odbioru system odpytuje SAP raz — pobiera dane o zamówieniu i batchu. Dane przekazywane są do LLM jako kontekst do analizy.
 
 **Potwierdzenie odbioru**
 Po pozytywnej walidacji system wysyła klientowi automatyczne potwierdzenie odbioru.
  
+**Pobranie danych z SAP**
+Po potwierdzeniu odbioru system odpytuje SAP raz — pobiera dane o zamówieniu i batchu. Dane przekazywane są do LLM jako kontekst do analizy.
+
 **Kategoryzacja przez LLM**
-LLM analizuje treść maila i zdjęcia i przypisuje kategorię wady. Zastępuje subiektywną ocenę specjalisty ujednoliconą klasyfikacją.
+LLM analizuje treść maila, zdjęcia i przypisuje kategorię wady. Zastępuje subiektywną ocenę specjalisty ujednoliconą klasyfikacją.
  
 **Tworzenie ticketu Complaint w JIRA**
 Ticket tworzony automatycznie z kategorią wady i danymi z SAP (zamówienie, batch, parametry produkcji). Specjalista przejmujący sprawę ma wszystkie dane w jednym miejscu.
@@ -216,7 +216,8 @@ LLM wykrywa język dominujący i wysyła odpowiedź w tym języku.
 |---|---|---|
 | Synchroniczny flow | Prosta architektura, niższy koszt wdrożenia | Brak priorytetyzacji — przy twardym SLA może być niewystarczające |
 | Brak feedback loop | Niższy koszt utrzymania, brak złożonej infrastruktury | Model nie poprawia się automatycznie — aktualizacja wymaga ręcznej interwencji |
-| Twarde reguły do walidacji nadawcy i zamówienia | Przewidywalne, szybkie, tanie | Brak tolerancji na błędy — literówka w adresie lub numerze zamówienia skutkuje odrzuceniem |
+| Brak feedback loop | Niższy koszt utrzymania, brak złożonej infrastruktury | Model nie poprawia się automatycznie — aktualizacja wymaga ręcznej interwencji |
+| Twarde reguły do walidacji domeny nadawcy | Przewidywalne, szybkie, tanie | System zależy od aktualności bazy klientów po stronie Metalpol — nieaktualna domena (nowy adres klienta, błąd w bazie) skutkuje cichym odrzuceniem reklamacji |
 | Edge case'y zawsze kierowane do specjalisty | Bezpieczeństwo — żadna reklamacja nie jest błędnie obsłużona automatycznie | Mniejsza automatyzacja — specjalista nadal obsługuje wyjątki |
 | Walidacja nadawcy jako filtr | Eliminacja spamu i nieuprawnionych zgłoszeń | Wymaga od klientów wysyłania reklamacji z zarejestrowanego adresu email — konieczne poinformowanie klientów |
  
@@ -298,8 +299,6 @@ Projekt zakłada użycie zewnętrznego modelu multimodalnego dostępnego przez A
 - Jakie są wymagania dotyczące bezpieczeństwa danych — czy dane reklamacyjne mogą być przesyłane do zewnętrznego API?
 - Jaki jest dostępny budżet na wywołania API?
   
-### 10.7 Obsługa zwrotki przy odrzuceniu maila
+### 10.7 Konfiguracja skrzynki i adresów wysyłki
  
-System nie wysyła odpowiedzi do nieznanych nadawców. Nierozstrzygnięte pozostaje zachowanie systemu gdy nadawca jest w bazie klientów, ale numer zamówienia nie przeszedł walidacji.
- 
-**Pytanie do klienta:** Czy w takim przypadku system ma wysłać zwrotkę z prośbą o weryfikację numeru zamówienia, czy mail jest odrzucany bez odpowiedzi?
+Przed wdrożeniem wymaga uzgodnienia konfiguracja skrzynki reklamacje@metalpol.pl (obsługa CC, unikanie duplikowania ticketów przy odpowiedziach klientów) oraz adres z którego system wysyła automatyczne potwierdzenia i odpowiedzi.
